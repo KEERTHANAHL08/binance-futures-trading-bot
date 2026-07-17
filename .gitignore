@@ -1,0 +1,16 @@
+# Credentials
+.env
+
+# Python caching
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment
+venv/
+.venv/
+env/
+ENV/
+
+# OS files
+.DS_Store

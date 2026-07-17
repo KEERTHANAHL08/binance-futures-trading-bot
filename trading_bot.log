@@ -1,0 +1,26 @@
+[2026-07-18 00:24:19,895] DEBUG [trading_bot:request:83] Request: GET https://testnet.binancefuture.com/fapi/v2/balance - Params: {'timestamp': 1784314459895, 'signature': 'a0f4b769...'}
+[2026-07-18 00:24:19,895] DEBUG [trading_bot:request:99] Response Status: 400
+[2026-07-18 00:24:19,895] ERROR [trading_bot:request:118] API Error - HTTP 400: code=-2010, msg=Account has insufficient balance.
+[2026-07-18 00:24:19,895] DEBUG [trading_bot:request:83] Request: POST https://testnet.binancefuture.com/fapi/v1/order - Params: {'symbol': 'BTCUSDT', 'side': 'BUY', 'quantity': '0.001', 'timestamp': 1784314459895, 'signature': '8c9cd32c...'}
+[2026-07-18 00:24:19,896] DEBUG [trading_bot:request:99] Response Status: <MagicMock name='post().status_code' id='4396542208'>
+[2026-07-18 00:24:19,896] DEBUG [trading_bot:request:126] Response JSON: {'orderId': 12345, 'status': 'NEW'}
+[2026-07-18 00:24:19,896] DEBUG [trading_bot:get_usdt_balance:30] USDT Balance Info: {'asset': 'USDT', 'balance': '1050.25', 'availableBalance': '900.50', 'maxWithdrawAmount': '900.50'}
+[2026-07-18 00:24:19,896] INFO [trading_bot:place_order:94] Placing LIMIT SELL order for 0.05 BTCUSDT...
+[2026-07-18 00:24:19,896] INFO [trading_bot:place_order:98] Successfully placed order. OrderId: 66666, Status: NEW
+[2026-07-18 00:24:19,897] INFO [trading_bot:place_order:94] Placing MARKET BUY order for 0.01 BTCUSDT...
+[2026-07-18 00:24:19,897] INFO [trading_bot:place_order:98] Successfully placed order. OrderId: 55555, Status: FILLED
+[2026-07-18 00:24:57,979] INFO [trading_bot:place_order:94] Placing MARKET BUY order for 0.005 BTCUSDT...
+[2026-07-18 00:24:57,979] DEBUG [trading_bot:mock_request:114] Request: POST https://testnet.binancefuture.com/fapi/v1/order - Params: {'symbol': 'BTCUSDT', 'side': 'BUY', 'quantity': '0.005', 'type': 'MARKET', 'timestamp': 1784314497979, 'signature': '3f2f6241...'}
+[2026-07-18 00:24:57,979] DEBUG [trading_bot:mock_request:129] Response Status: 200
+[2026-07-18 00:24:57,979] DEBUG [trading_bot:mock_request:130] Response JSON: {'orderId': 2254222034, 'symbol': 'BTCUSDT', 'status': 'FILLED', 'clientOrderId': 'bot_market_order_123', 'price': '0.00', 'avgPrice': '62450.50', 'origQty': '0.005', 'executedQty': '0.005', 'cumQty': '0.005', 'cumQuote': '312.2525', 'timeInForce': 'GTC', 'type': 'MARKET', 'reduceOnly': False, 'closePosition': False, 'side': 'BUY', 'positionSide': 'BOTH', 'stopPrice': '0.00', 'workingType': 'CONTRACT_PRICE', 'priceProtect': False, 'origType': 'MARKET', 'updateTime': 1721245000000}
+[2026-07-18 00:24:57,979] INFO [trading_bot:place_order:98] Successfully placed order. OrderId: 2254222034, Status: FILLED
+[2026-07-18 00:24:57,980] INFO [trading_bot:place_order:94] Placing LIMIT BUY order for 0.002 BTCUSDT...
+[2026-07-18 00:24:57,980] DEBUG [trading_bot:mock_request:114] Request: POST https://testnet.binancefuture.com/fapi/v1/order - Params: {'symbol': 'BTCUSDT', 'side': 'BUY', 'quantity': '0.002', 'type': 'LIMIT', 'price': '60000.0', 'timeInForce': 'GTC', 'timestamp': 1784314497980, 'signature': 'af052ee1...'}
+[2026-07-18 00:24:57,980] DEBUG [trading_bot:mock_request:129] Response Status: 200
+[2026-07-18 00:24:57,980] DEBUG [trading_bot:mock_request:130] Response JSON: {'orderId': 2254222045, 'symbol': 'BTCUSDT', 'status': 'NEW', 'clientOrderId': 'bot_limit_order_456', 'price': '60000.00', 'avgPrice': '0.00', 'origQty': '0.002', 'executedQty': '0.000', 'cumQty': '0.000', 'cumQuote': '0.0000', 'timeInForce': 'GTC', 'type': 'LIMIT', 'reduceOnly': False, 'closePosition': False, 'side': 'BUY', 'positionSide': 'BOTH', 'stopPrice': '0.00', 'workingType': 'CONTRACT_PRICE', 'priceProtect': False, 'origType': 'LIMIT', 'updateTime': 1721245050000}
+[2026-07-18 00:24:57,980] INFO [trading_bot:place_order:98] Successfully placed order. OrderId: 2254222045, Status: NEW
+[2026-07-18 00:24:57,980] INFO [trading_bot:place_order:94] Placing STOP_LIMIT SELL order for 0.002 BTCUSDT...
+[2026-07-18 00:24:57,980] DEBUG [trading_bot:mock_request:114] Request: POST https://testnet.binancefuture.com/fapi/v1/order - Params: {'symbol': 'BTCUSDT', 'side': 'SELL', 'quantity': '0.002', 'type': 'STOP', 'price': '59000.0', 'stopPrice': '59500.0', 'timeInForce': 'GTC', 'timestamp': 1784314497980, 'signature': '807ebb5e...'}
+[2026-07-18 00:24:57,980] DEBUG [trading_bot:mock_request:129] Response Status: 200
+[2026-07-18 00:24:57,980] DEBUG [trading_bot:mock_request:130] Response JSON: {'orderId': 2254222080, 'symbol': 'BTCUSDT', 'status': 'NEW', 'clientOrderId': 'bot_stop_limit_order_789', 'price': '59000.00', 'avgPrice': '0.00', 'origQty': '0.002', 'executedQty': '0.000', 'cumQty': '0.000', 'cumQuote': '0.0000', 'timeInForce': 'GTC', 'type': 'STOP', 'reduceOnly': False, 'closePosition': False, 'side': 'SELL', 'positionSide': 'BOTH', 'stopPrice': '59500.00', 'workingType': 'CONTRACT_PRICE', 'priceProtect': False, 'origType': 'STOP', 'updateTime': 1721245100000}
+[2026-07-18 00:24:57,980] INFO [trading_bot:place_order:98] Successfully placed order. OrderId: 2254222080, Status: NEW
