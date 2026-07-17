@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: binance-futures-dashboard
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: BINANCE_API_KEY
+        sync: false # Set sync: false to prompt the user to input this value in the UI
+      - key: BINANCE_API_SECRET
+        sync: false

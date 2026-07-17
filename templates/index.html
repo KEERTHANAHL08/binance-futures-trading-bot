@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binance Futures Testnet Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: #151c2c;
+            --panel-border: #243049;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --color-primary: #38bdf8;
+            --color-green: #10b981;
+            --color-red: #ef4444;
+            --color-green-glow: rgba(16, 185, 129, 0.15);
+            --color-red-glow: rgba(239, 68, 68, 0.15);
+            --font-main: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --transition-speed: 0.25s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header Style */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--panel-border);
+            padding-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--color-red);
+            box-shadow: 0 0 8px var(--color-red);
+        }
+
+        .status-dot.connected {
+            background-color: var(--color-green);
+            box-shadow: 0 0 8px var(--color-green);
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1.2fr 1.8fr;
+            }
+        }
+
+        /* Panels */
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--panel-border);
+            padding-bottom: 0.75rem;
+        }
+
+        /* Balance Info Card */
+        .balance-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .balance-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .balance-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+        }
+
+        /* Order Form */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Side Selector Toggles */
+        .side-toggle {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            background-color: rgba(0,0,0,0.2);
+            padding: 0.25rem;
+            border-radius: 8px;
+            border: 1px solid var(--panel-border);
+        }
+
+        .side-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.6rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+
+        .side-btn.buy.active {
+            background-color: var(--color-green);
+            color: white;
+            box-shadow: 0 2px 4px var(--color-green-glow);
+        }
+
+        .side-btn.sell.active {
+            background-color: var(--color-red);
+            color: white;
+            box-shadow: 0 2px 4px var(--color-red-glow);
+        }
+
+        /* Tab Selectors */
+        .type-tabs {
+            display: flex;
+            gap: 0.25rem;
+            background-color: rgba(0,0,0,0.2);
+            padding: 0.25rem;
+            border-radius: 8px;
+            border: 1px solid var(--panel-border);
+        }
+
+        .type-tab {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            text-align: center;
+        }
+
+        .type-tab.active {
+            background-color: var(--panel-border);
+            color: var(--text-main);
+        }
+
+        /* Inputs */
+        input, select {
+            width: 100%;
+            background-color: rgba(0,0,0,0.2);
+            border: 1px solid var(--panel-border);
+            color: var(--text-main);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color var(--transition-speed);
+        }
+
+        input:focus {
+            border-color: var(--color-primary);
+        }
+
+        input::placeholder {
+            color: #4b5563;
+        }
+
+        .input-with-addon {
+            position: relative;
+        }
+
+        .input-addon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        /* Conditional form fields container */
+        .conditional-fields {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .conditional-fields.visible {
+            max-height: 250px;
+        }
+
+        /* Buttons */
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #38bdf8, #3b82f6);
+            border: none;
+            color: white;
+            padding: 0.85rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(56, 189, 248, 0.2);
+            transition: all var(--transition-speed);
+            margin-top: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(56, 189, 248, 0.35);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            background: #272f44;
+            color: var(--text-muted);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Price Ticker Card */
+        .ticker-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(255,255,255,0.01);
+            padding: 1rem;
+            border: 1px dashed var(--panel-border);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .ticker-title {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .ticker-price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            font-family: var(--font-mono);
+        }
+
+        /* Logs Console */
+        .console-container {
+            display: flex;
+            flex-direction: column;
+            height: 480px;
+        }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .console-body {
+            flex: 1;
+            background-color: #070913;
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            color: #d1d5db;
+        }
+
+        .log-line {
+            white-space: pre-wrap;
+            border-left: 2px solid transparent;
+            padding-left: 0.5rem;
+        }
+
+        .log-line.DEBUG { color: #84cc16; border-color: #84cc16; }
+        .log-line.INFO { color: #38bdf8; border-color: #38bdf8; }
+        .log-line.WARNING { color: #eab308; border-color: #eab308; }
+        .log-line.ERROR { color: #ef4444; border-color: #ef4444; }
+
+        .btn-refresh {
+            background: none;
+            border: 1px solid var(--panel-border);
+            color: var(--text-muted);
+            padding: 0.35rem 0.75rem;
+            font-size: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+
+        .btn-refresh:hover {
+            background-color: var(--panel-border);
+            color: var(--text-main);
+        }
+
+        /* Popup Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            transform: translateY(150%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1000;
+        }
+
+        .toast.visible {
+            transform: translateY(0);
+        }
+
+        .toast.success { background-color: var(--color-green); }
+        .toast.error { background-color: var(--color-red); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Binance Futures Dashboard</h1>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">USDT-M Futures Testnet Integration</p>
+            </div>
+            <div class="status-badge">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Verifying credentials...</span>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Left Column: Operations -->
+            <div class="panel">
+                <div class="panel-title">Place Trade Order</div>
+                
+                <div class="balance-info">
+                    <span class="balance-label">Available USDT Balance</span>
+                    <span class="balance-value" id="walletBalance">-- USDT</span>
+                </div>
+
+                <form id="orderForm" onsubmit="submitOrder(event)">
+                    <div class="form-group">
+                        <label>Order Side</label>
+                        <div class="side-toggle">
+                            <button type="button" class="side-btn buy active" onclick="setSide('BUY')">BUY (LONG)</button>
+                            <button type="button" class="side-btn sell" onclick="setSide('SELL')">SELL (SHORT)</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Symbol</label>
+                        <input type="text" id="symbol" placeholder="e.g. BTCUSDT" required value="BTCUSDT" onchange="onSymbolChange()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Order Type</label>
+                        <div class="type-tabs">
+                            <button type="button" class="type-tab active" onclick="setType('MARKET')">MARKET</button>
+                            <button type="button" class="type-tab" onclick="setType('LIMIT')">LIMIT</button>
+                            <button type="button" class="type-tab" onclick="setType('STOP_LIMIT')">STOP LIMIT</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <div class="input-with-addon">
+                            <input type="number" step="any" id="quantity" placeholder="0.000" required>
+                            <span class="input-addon" id="qtyAddon">Contracts</span>
+                        </div>
+                    </div>
+
+                    <!-- Limit Price Field -->
+                    <div id="priceGroup" class="conditional-fields form-group">
+                        <label>Price</label>
+                        <div class="input-with-addon">
+                            <input type="number" step="any" id="price" placeholder="0.00">
+                            <span class="input-addon">USDT</span>
+                        </div>
+                    </div>
+
+                    <!-- Stop Trigger Price Field -->
+                    <div id="stopPriceGroup" class="conditional-fields form-group">
+                        <label>Trigger Stop Price</label>
+                        <div class="input-with-addon">
+                            <input type="number" step="any" id="stopPrice" placeholder="0.00">
+                            <span class="input-addon">USDT</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="btnSubmit">Place Order</button>
+                </form>
+            </div>
+
+            <!-- Right Column: Markets & Console Logs -->
+            <div class="panel">
+                <div class="panel-title">
+                    Market Information
+                    <button class="btn-refresh" onclick="updatePrice()">Refresh Price</button>
+                </div>
+
+                <div class="ticker-card">
+                    <span class="ticker-title" id="tickerSymbol">BTCUSDT Current Ticker Price</span>
+                    <span class="ticker-price" id="tickerVal">-- USDT</span>
+                </div>
+
+                <div class="console-container">
+                    <div class="console-header">
+                        <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted)">Live Bot Logs (`trading_bot.log`)</span>
+                        <button class="btn-refresh" onclick="fetchLogs()">Clear Console Refresh</button>
+                    </div>
+                    <div class="console-body" id="consoleLogs">
+                        <!-- Log lines load here -->
+                        <div style="color: var(--text-muted);">Fetching logs...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toast">Notification Message</div>
+
+    <script>
+        // State variables
+        let orderSide = 'BUY';
+        let orderType = 'MARKET';
+        let isConfigured = false;
+
+        // UI Initializer
+        window.addEventListener('DOMContentLoaded', async () => {
+            await checkConfig();
+            if (isConfigured) {
+                updateBalance();
+            }
+            updatePrice();
+            fetchLogs();
+
+            // Setup polling intervals
+            setInterval(updatePrice, 5000); // Poll price every 5s
+            setInterval(fetchLogs, 3000);  // Poll logs every 3s
+        });
+
+        // Config Check
+        async function checkConfig() {
+            try {
+                const response = await fetch('/api/config');
+                const data = await response.json();
+                
+                const dot = document.getElementById('statusDot');
+                const text = document.getElementById('statusText');
+                
+                if (data.authenticated) {
+                    isConfigured = true;
+                    dot.className = 'status-dot connected';
+                    text.innerText = 'Connected (Keys Configured)';
+                } else {
+                    isConfigured = false;
+                    dot.className = 'status-dot';
+                    text.innerText = 'Auth Required (Keys Missing)';
+                    document.getElementById('walletBalance').innerText = 'N/A';
+                    document.getElementById('btnSubmit').disabled = true;
+                    showToast('API keys are missing! Configure them in Render dashboard or .env file.', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Failed to connect to backend server configuration.', 'error');
+            }
+        }
+
+        // Fetch Balance
+        async function updateBalance() {
+            if (!isConfigured) return;
+            try {
+                const response = await fetch('/api/balance');
+                if (!response.ok) throw new Error('API Error');
+                const data = await response.json();
+                document.getElementById('walletBalance').innerText = `${data.available_balance.toFixed(2)} USDT`;
+            } catch (err) {
+                document.getElementById('walletBalance').innerText = 'Error';
+            }
+        }
+
+        // Fetch Ticker Price
+        async function updatePrice() {
+            const symbol = document.getElementById('symbol').value.trim().toUpperCase();
+            if (!symbol) return;
+            try {
+                const response = await fetch(`/api/price/${symbol}`);
+                const data = await response.json();
+                if (response.ok) {
+                    document.getElementById('tickerSymbol').innerText = `${symbol} Ticker Price`;
+                    document.getElementById('tickerVal').innerText = `${data.price.toFixed(2)} USDT`;
+                } else {
+                    document.getElementById('tickerVal').innerText = 'Error';
+                }
+            } catch (err) {
+                document.getElementById('tickerVal').innerText = 'Error';
+            }
+        }
+
+        function onSymbolChange() {
+            updatePrice();
+            const symbol = document.getElementById('symbol').value.trim().toUpperCase();
+            document.getElementById('qtyAddon').innerText = symbol;
+        }
+
+        // Form Toggles
+        function setSide(side) {
+            orderSide = side;
+            document.querySelectorAll('.side-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (side === 'BUY') {
+                document.querySelector('.side-btn.buy').classList.add('active');
+            } else {
+                document.querySelector('.side-btn.sell').classList.add('active');
+            }
+        }
+
+        function setType(type) {
+            orderType = type;
+            document.querySelectorAll('.type-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.innerText === type || (tab.innerText === 'STOP LIMIT' && type === 'STOP_LIMIT')) {
+                    tab.classList.add('active');
+                }
+            });
+
+            // Adjust inputs
+            const priceGroup = document.getElementById('priceGroup');
+            const stopPriceGroup = document.getElementById('stopPriceGroup');
+
+            if (type === 'MARKET') {
+                priceGroup.classList.remove('visible');
+                stopPriceGroup.classList.remove('visible');
+                document.getElementById('price').required = false;
+                document.getElementById('stopPrice').required = false;
+            } else if (type === 'LIMIT') {
+                priceGroup.classList.add('visible');
+                stopPriceGroup.classList.remove('visible');
+                document.getElementById('price').required = true;
+                document.getElementById('stopPrice').required = false;
+            } else if (type === 'STOP_LIMIT') {
+                priceGroup.classList.add('visible');
+                stopPriceGroup.classList.add('visible');
+                document.getElementById('price').required = true;
+                document.getElementById('stopPrice').required = true;
+            }
+        }
+
+        // Submit Order
+        async function submitOrder(e) {
+            e.preventDefault();
+            if (!isConfigured) return;
+
+            const symbol = document.getElementById('symbol').value.trim().toUpperCase();
+            const quantity = parseFloat(document.getElementById('quantity').value);
+            const price = document.getElementById('price').value ? parseFloat(document.getElementById('price').value) : null;
+            const stop_price = document.getElementById('stopPrice').value ? parseFloat(document.getElementById('stopPrice').value) : null;
+
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = true;
+            btn.innerText = 'Executing...';
+
+            const payload = {
+                symbol,
+                side: orderSide,
+                type: orderType,
+                quantity,
+                price,
+                stop_price
+            };
+
+            try {
+                const response = await fetch('/api/order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast(`Success! Order ID: ${data.orderId}`, 'success');
+                    updateBalance();
+                    document.getElementById('quantity').value = '';
+                    document.getElementById('price').value = '';
+                    document.getElementById('stopPrice').value = '';
+                } else {
+                    showToast(`Error: ${data.detail || 'Failed to place order'}`, 'error');
+                }
+            } catch (err) {
+                showToast('Failed to contact backend API server.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Place Order';
+                fetchLogs();
+            }
+        }
+
+        // Fetch logs
+        async function fetchLogs() {
+            try {
+                const response = await fetch('/api/logs?limit=40');
+                const data = await response.json();
+                
+                const logBox = document.getElementById('consoleLogs');
+                logBox.innerHTML = '';
+                
+                if (data.logs && data.logs.length > 0) {
+                    data.logs.forEach(line => {
+                        const div = document.createElement('div');
+                        div.className = 'log-line';
+                        
+                        // Parse log levels for color scheme
+                        if (line.includes(' DEBUG ')) div.classList.add('DEBUG');
+                        else if (line.includes(' INFO ')) div.classList.add('INFO');
+                        else if (line.includes(' WARNING ')) div.classList.add('WARNING');
+                        else if (line.includes(' ERROR ')) div.classList.add('ERROR');
+                        
+                        div.innerText = line;
+                        logBox.appendChild(div);
+                    });
+                    
+                    // Auto scroll to bottom
+                    logBox.scrollTop = logBox.scrollHeight;
+                } else {
+                    logBox.innerHTML = `<div style="color: var(--text-muted);">No log records found.</div>`;
+                }
+            } catch (err) {
+                console.error('Failed to poll logs:', err);
+            }
+        }
+
+        // Notification Helper
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.className = `toast visible ${type}`;
+            
+            setTimeout(() => {
+                toast.classList.remove('visible');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

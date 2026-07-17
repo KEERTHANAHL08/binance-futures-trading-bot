@@ -130,3 +130,33 @@ Run the mocked unit test suite to verify internal validation and signing mechani
 ```bash
 python -m unittest tests/test_bot.py
 ```
+
+---
+
+## Web Dashboard & Render Deployment
+
+We have included a web-based dashboard utilizing FastAPI and vanilla CSS.
+
+### Running Locally
+To launch the FastAPI dashboard on your local machine:
+```bash
+python app.py
+```
+Open your browser and navigate to `http://127.0.0.1:8000` to interact with the visual interface.
+
+### Deploying to Render
+This project includes a `render.yaml` blueprint for automated configuration on Render.
+
+1. Ensure all changes are pushed to your GitHub repository.
+2. Log in to your [Render Dashboard](https://dashboard.render.com).
+3. Click **New +** at the top right, and select **Blueprint**.
+4. Connect your GitHub repository.
+5. Render will automatically read `render.yaml` and parse the configuration settings:
+   - **Service Type**: Web Service
+   - **Runtime**: Python
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `uvicorn app:app --host 0.0.0.0 --port $PORT`
+6. Under **Environment Variables**, enter your Binance Futures Testnet credentials:
+   - `BINANCE_API_KEY`
+   - `BINANCE_API_SECRET`
+7. Click **Deploy**. Render will build the environment and host your dashboard on a secure public URL.
